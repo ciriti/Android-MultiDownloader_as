@@ -233,7 +233,7 @@ public int onStartCommand(Intent intent, int flags, int startId) {
 
 ```
 
-## Display the result
+## Display the results
 In this case the best solition to show to user the progress of download is create a recycleview and for each item layout apply the observer pattern and using the following method  to register and unregister from the Subject:
 
 ```

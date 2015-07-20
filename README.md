@@ -108,4 +108,74 @@ public abstract class AbstractControllerServ extends Service{
 The Observers and the Subject are built, we now have to use these. To make this we have to provide the implementation of the Observer, in this case take for example an activity and which implements the Observer interface.
 This is NOT sufficient to use the pattern, to provide an instance of our Subject we'll realize a simple mechanism to get the Subject, in other world we'll have to bind the service and use them as an android remote server.
 
+```java
+
+public abstract class AbObserverActivity extends Activity implements Observer{
+	
+	protected ControllerServ mService;
+	private boolean mBound = false;
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		// Bind to ControllerServ
+		Intent intent = new Intent(this, ControllerServ.class);
+		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+	}
+
+
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		// Unbind from the service
+		if (mBound) {
+			unbindService(mConnection);
+			mBound = false;
+			rem();
+		}
+	}
+
+	/**
+	 * Register this Observer to the Subject
+	 */
+	protected void rec() {
+		super.onResume();
+		// segister Observer
+		mService.registerObserver(this);
+	}
+	
+	/**
+	 * Deregister this Observer from the Subject
+	 */
+	protected void rem() {
+		super.onPause();
+		// deregister observer
+		mService.deregidterObserver(this);
+	}
+	
+	/** Defines callbacks for service binding, passed to bindService() */
+	private ServiceConnection mConnection = new ServiceConnection() {
+
+		@Override
+		public void onServiceConnected(ComponentName className,
+				IBinder service) {
+			// We've bound to ControllerServ, cast the IBinder and get ControllerServ instance
+			LocalBinder binder = (LocalBinder) service;
+			mService = binder.getService();
+			mBound = true;
+			rec();
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName arg0) {
+			mBound = false;
+			rem();
+		}
+	};
+
+}
+
+```
+
 ##under construction

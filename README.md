@@ -105,4 +105,7 @@ public abstract class AbstractControllerServ extends Service{
 
 ```
 
+The Observers and the Subject are built, we now have to use these. To make this we have to provide the implementation of the Observer, in this case take for example an activity and which implements the Observer interface.
+This is NOT sufficient to use the pattern, to provide an instance of our Subject we'll realize a simple mechanism to get the Subject, in other world we'll have to bind the service and use them as an android remote server.
+
 ##under construction

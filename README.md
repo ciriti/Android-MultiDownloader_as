@@ -110,7 +110,7 @@ This is NOT sufficient to use the pattern, to provide an instance of our Subject
 
 ```java
 
-public abstract class AbObserverActivity extends Activity implements Observer{
+public abstract class AbObserverActivity extends FragmentActivity implements Observer{
 	
 	protected ControllerServ mService;
 	private boolean mBound = false;
@@ -122,8 +122,6 @@ public abstract class AbObserverActivity extends Activity implements Observer{
 		Intent intent = new Intent(this, ControllerServ.class);
 		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 	}
-
-
 
 	@Override
 	protected void onStop() {
@@ -177,5 +175,7 @@ public abstract class AbObserverActivity extends Activity implements Observer{
 }
 
 ```
+
+With this approach in onStart method we'll get the instance of Subject and then we'll register the activity as Observer, in onStop method we'll deregister the Observer and unbind the service. In this way we've avoid to leak the activity (or some other component who want to register itself)
 
 ##under construction

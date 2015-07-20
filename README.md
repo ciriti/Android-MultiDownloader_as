@@ -176,6 +176,12 @@ public abstract class AbObserverActivity extends FragmentActivity implements Obs
 
 ```
 
-With this approach in onStart method we'll get the instance of Subject and then we'll register the activity as Observer, in onStop method we'll deregister the Observer and unbind the service. In this way we've avoid to leak the activity (or some other component who want to register itself)
+With this approach in onStart method we'll get the instance of Subject and then we'll register the activity as Observer, in onStop method we'll deregister the Observer and unbind the service. In this way we've avoid to leak the activity (or some other component who want to register itself).
+
+## Service's implementation
+
+One of the most interesting aspect is the engine used handle a multiple downloads. In this case i used a ThreadPoolExecutor with a fix number of threads
+<!---->
+executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NUMBER_OF_THREAD);
 
 ##under construction

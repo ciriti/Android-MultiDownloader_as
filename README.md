@@ -180,8 +180,76 @@ With this approach in onStart method we'll get the instance of Subject and then 
 
 ## Service's implementation
 
-One of the most interesting aspect is the engine used handle a multiple downloads. In this case i used a ThreadPoolExecutor with a fix number of threads
-<!---->
+One of the most interesting aspect is the engine used handle a multiple downloads. In this case i used a ThreadPoolExecutor with a fix number of threads:
+
+```java
 executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NUMBER_OF_THREAD);
+```
+
+To begin a new thread to download we'll use the service a a local service called by this:
+
+```java
+// we are sending an intent to tell to start a new download
+public static void startDownloadItem(Context context, ItemToDownload infoItem) {
+		Intent i = new Intent(context, ControllerServ.class);
+		i.putExtra(ControllerServ.KEY_ITEM_DOWNLOAD, infoItem);
+		context.startService(i);
+}
+```
+
+and we'll process it in the onStartCommand:
+
+```java
+
+@Override
+public int onStartCommand(Intent intent, int flags, int startId) {
+
+	ItemToDownload fileInfo	= (ItemToDownload) intent.getSerializableExtra(KEY_ITEM_DOWNLOAD);
+	if(packageMap.containsKey(fileInfo.getPackageName()) && !fileInfo.isActionRemove()){
+		return 0;
+	}
+	mStartId = startId;
+
+	command = FileDownloader.newInstance(handler, fileInfo);
+		
+	/**
+	 * keep trace to Task if I have not remove it
+	 */
+	if(!fileInfo.isActionRemove())
+		packageMap.put(fileInfo.getPackageName(), command);
+	
+	if(command != null) {
+		if(!fileInfo.isActionRemove()){
+			getParallelExecutor().execute(command);
+		}else{
+			interruptTask(getParallelExecutor(), fileInfo);
+		}
+	}
+	/**
+	 * significa che se si interrompe l'esecuzione del servizio non ripartira'�in automatico
+	 */
+	return START_NOT_STICKY;
+}
+
+```
+
+## Display the result
+In this case the best solition to show to user the progress of download is create a recycleview and for each item layout apply the observer pattern and using the following method  to register and unregister from the Subject:
+
+```
+
+@Override       
+public void onViewAttachedToWindow(View v) {
+      // register to subject in this case will be the Activity or fragment
+}
+
+@Override
+public void onViewDetachedFromWindow(View v) {
+     // deregister to subject in this case will be the Activity or fragment
+}
+
+```
+
+As writed on comments for the view holder a good solution is use the frgment as Subject becose they'll call often the above methods.
 
 ##under construction
